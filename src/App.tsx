@@ -1,4 +1,5 @@
 import { ErrorMessage } from "@hookform/error-message";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "./components/ui/Button";
 import { Input } from "./components/ui/Input";
@@ -15,6 +16,7 @@ export default function App() {
     formState: { errors, dirtyFields, isSubmitting, isValid },
     clearErrors,
     reset,
+    setFocus,
   } = useForm<IFormData>({});
 
   // isDirty is true if form as changed
@@ -30,6 +32,11 @@ export default function App() {
   console.log('isSubmitting =>', isSubmitting);
 
   const formIsDirty = Object.keys(dirtyFields).length > 0;
+
+  useEffect(() => {
+    const keyOfError = Object.keys(errors)[0] as keyof IFormData
+    setFocus(keyOfError)
+  }, [errors, setFocus])
 
   return (
     <div className="min-h-screen flex items-center justify-center">
