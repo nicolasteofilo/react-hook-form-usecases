@@ -1,20 +1,25 @@
+import { ErrorMessage } from "@hookform/error-message";
 import { useForm } from "react-hook-form";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import { Button } from "./components/ui/Button";
+import { Input } from "./components/ui/Input";
+
+interface FormData {
+  name: string;
+  age: number;
+}
 
 export default function App() {
   const {
     handleSubmit: submit,
     register,
     formState: { errors },
-  } = useForm<{
-    name: string;
-    age: number;
-  }>();
+  } = useForm<FormData>();
 
   const handleSubmit = submit(async (data) => {
     console.log(data);
   });
+
+  console.log('Rendered')
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -32,11 +37,20 @@ export default function App() {
                 value: true,
                 message: "O nome é obrigatório",
               },
+              validate: (value) => {
+                if (value.split(' ').length <= 1) {
+                  return 'Insira nome e sobrenome'
+                }
+              }
             })}
           />
-          {errors.name && (
-            <small className="text-red-400">{errors.name.message}</small>
-          )}
+          <ErrorMessage
+            errors={errors}
+            name="name"
+            render={({ message }) => (
+              <small className="text-red-400">{message}</small>
+            )}
+          />
         </div>
         <div>
           <Input
@@ -49,14 +63,18 @@ export default function App() {
               },
               min: {
                 value: 18,
-                message: 'A idade mínima é 18 anos'
+                message: "A idade mínima é 18 anos",
               },
               setValueAs: (value) => Number(value),
             })}
           />
-          {errors.age && (
-            <small className="text-red-400">{errors.age.message}</small>
-          )}
+          <ErrorMessage
+            errors={errors}
+            name="age"
+            render={(message) => (
+              <small className="text-red-400">{message.message}</small>
+            )}
+          />
         </div>
 
         <Button type="submit">Enviar</Button>
