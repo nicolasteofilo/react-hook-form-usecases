@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "./components/ui/Button";
 import { Input } from "./components/ui/Input";
 
-interface FormData {
+interface IFormData {
   name: string;
   age: number;
 }
@@ -12,18 +12,24 @@ export default function App() {
   const {
     handleSubmit: submit,
     register,
-    formState: { errors },
-  } = useForm<FormData>();
+    formState: { errors, dirtyFields },
+    clearErrors,
+  } = useForm<IFormData>({});
+
+  // isDirty is true if form as changed
 
   const handleSubmit = submit(async (data) => {
     console.log(data);
   });
 
-  console.log('Rendered')
+  const formIsDirty = Object.keys(dirtyFields).length > 0;
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-2 max-w-[300px] w-full"
+      >
         <div>
           <Input
             type="text"
@@ -38,10 +44,10 @@ export default function App() {
                 message: "O nome é obrigatório",
               },
               validate: (value) => {
-                if (value.split(' ').length <= 1) {
-                  return 'Insira nome e sobrenome'
+                if (value.split(" ").length <= 1) {
+                  return "Insira nome e sobrenome";
                 }
-              }
+              },
             })}
           />
           <ErrorMessage
@@ -77,7 +83,22 @@ export default function App() {
           />
         </div>
 
-        <Button type="submit">Enviar</Button>
+        <div className="flex mt-4 gap-2 w-full">
+          <Button type="submit" className="flex-1" disabled={!formIsDirty}>
+            Salvar
+          </Button>
+          <Button type="submit" className="flex-1" disabled={formIsDirty}>
+            Enviar
+          </Button>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => clearErrors()}
+        >
+          Limpar campos
+        </Button>
       </form>
     </div>
   );
