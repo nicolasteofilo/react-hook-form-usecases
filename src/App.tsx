@@ -12,15 +12,22 @@ export default function App() {
   const {
     handleSubmit: submit,
     register,
-    formState: { errors, dirtyFields },
+    formState: { errors, dirtyFields, isSubmitting, isValid },
     clearErrors,
+    reset,
   } = useForm<IFormData>({});
 
   // isDirty is true if form as changed
 
   const handleSubmit = submit(async (data) => {
-    console.log(data);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    reset({
+      age: data.age,
+      name: data.name
+    }) // se values passed in reset will be new defaultValues 
   });
+
+  console.log('isSubmitting =>', isSubmitting);
 
   const formIsDirty = Object.keys(dirtyFields).length > 0;
 
@@ -84,11 +91,19 @@ export default function App() {
         </div>
 
         <div className="flex mt-4 gap-2 w-full">
-          <Button type="submit" className="flex-1" disabled={!formIsDirty}>
-            Salvar
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={!formIsDirty || isSubmitting}
+          >
+            {isSubmitting ? "Salvando..." : "Salvar"}
           </Button>
-          <Button type="submit" className="flex-1" disabled={formIsDirty}>
-            Enviar
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={formIsDirty || isSubmitting || !isValid}
+          >
+            {isSubmitting ? "Salvando..." : "Enviar"}
           </Button>
         </div>
         <Button
